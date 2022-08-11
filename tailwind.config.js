@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 const { fontFamily } = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
