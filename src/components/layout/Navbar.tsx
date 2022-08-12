@@ -106,7 +106,7 @@ function SignInModal(): JSX.Element {
 export default function Navbar() {
   const { data: session, status } = useSession();
   return (
-    <nav className='flex justify-between px-4 py-3'>
+    <nav className='flex h-16 items-center justify-between px-4 shadow'>
       <div></div>
       {status === 'unauthenticated' ? (
         // eslint-disable-next-line @next/next/no-html-link-for-pages

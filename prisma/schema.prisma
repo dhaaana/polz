@@ -55,21 +55,22 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Question {
+model Poll {
   id         String   @id @default(cuid())
   body       String   @db.Text
   ownerToken String
+  isPublic   Boolean  @default(false)
   createdAt  DateTime @default(now())
   expiresAt  DateTime
   options    Option[]
 }
 
 model Option {
-  id         String   @id @default(cuid())
-  body       String
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  votes      Vote[]
+  id     String @id @default(cuid())
+  body   String
+  pollId String
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes  Vote[]
 }
 
 model Vote {
