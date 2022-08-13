@@ -10,7 +10,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        primary: ['Inter', ...fontFamily.sans],
+        primary: ['Rubik', ...fontFamily.sans],
+        inter: ['Inter', ...fontFamily.sans],
+        spacemono: ['Space Mono', ...fontFamily.mono],
       },
       colors: {
         cgreen: {

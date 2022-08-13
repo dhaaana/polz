@@ -12,6 +12,7 @@ import React from 'react';
 import { Modal } from '../utilities/Modal';
 
 function SignInModal(): JSX.Element {
+  const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [providers, setProviders] =
@@ -30,14 +31,26 @@ function SignInModal(): JSX.Element {
   }, []);
   return (
     <>
-      <button
-        className='rounded-md bg-lime-300 px-5 py-2 hover:bg-lime-200'
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        Sign In
-      </button>
+      {status === 'unauthenticated' ? (
+        <div className='group relative h-10 w-28'>
+          <div className='absolute h-full w-full rounded-md bg-black'></div>
+          <button className='absolute h-full w-full rounded-md border-2 border-black bg-cgreen-100 text-black transition-transform duration-200 hover:-translate-x-1 hover:-translate-y-1 active:translate-y-0 active:translate-x-0'>
+            Sign In
+          </button>
+        </div>
+      ) : status === 'loading' ? (
+        <p>Loading..</p>
+      ) : (
+        <div className='flex items-center gap-x-2'>
+          <p>{session?.user?.email}</p>
+          <button
+            onClick={() => signOut()}
+            className='rounded-md bg-lime-300 px-5 py-2 hover:bg-lime-200'
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
 
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <header className='flex items-center'>
@@ -96,7 +109,6 @@ function SignInModal(): JSX.Element {
             ))
           )}
         </main>
-
         <footer className='mt-4 flex justify-end gap-4'></footer>
       </Modal>
     </>
@@ -104,26 +116,14 @@ function SignInModal(): JSX.Element {
 }
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
   return (
-    <nav className='flex h-16 items-center justify-between px-4 shadow'>
-      <div></div>
-      {status === 'unauthenticated' ? (
-        // eslint-disable-next-line @next/next/no-html-link-for-pages
+    <nav className='flex px-10'>
+      <div className='absolute top-3 rounded-[50%] border-2 border-black bg-pink-200 py-5 px-10'>
+        <h1 className='font-spacemono text-4xl'>POLZ</h1>
+      </div>
+      <div className='flex flex-grow justify-end py-3 px-2'>
         <SignInModal />
-      ) : status === 'loading' ? (
-        <p>Loading..</p>
-      ) : (
-        <div className='flex items-center gap-x-2'>
-          <p>{session?.user?.email}</p>
-          <button
-            onClick={() => signOut()}
-            className='rounded-md bg-lime-300 px-5 py-2 hover:bg-lime-200'
-          >
-            Sign Out
-          </button>
-        </div>
-      )}
+      </div>
     </nav>
   );
 }
