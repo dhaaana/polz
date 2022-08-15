@@ -4,16 +4,16 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 
 import { createRouter } from '../context';
-import { pollSchema } from '../schema';
+import { pollSchema } from '../../schema/app.schema';
 
-export const appRouter = createRouter()
-  .query('get-all-poll', {
+export const pollRouter = createRouter()
+  .query('all', {
     async resolve() {
       const polls = await prisma.poll.findMany();
       return polls;
     },
   })
-  .mutation('create-poll', {
+  .mutation('create', {
     input: pollSchema,
     async resolve({ input, ctx }) {
       const { poll: pollData, options: optionsData } = input;
@@ -35,7 +35,7 @@ export const appRouter = createRouter()
       return { poll, option };
     },
   })
-  .query('get-poll-by-id', {
+  .query('by-id', {
     input: z.object({
       id: z.string(),
     }),
@@ -99,5 +99,3 @@ export const appRouter = createRouter()
       return vote;
     },
   });
-
-export type AppRouter = typeof appRouter;
