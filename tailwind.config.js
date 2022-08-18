@@ -14,6 +14,9 @@ module.exports = {
         inter: ['Inter', ...fontFamily.sans],
         spacemono: ['Space Mono', ...fontFamily.mono],
       },
+      borderWidth: {
+        1.5: '1.5px',
+      },
       colors: {
         cgreen: {
           50: '#32dc45',

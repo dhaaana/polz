@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const pollSchema = z.object({
   poll: z.object({
     body: z.string().min(2, 'Question must contain at least 2 character(s)'),
-    expiresAt: z.string(),
+    expiresAt: z.date().optional(),
   }),
   options: z
     .array(

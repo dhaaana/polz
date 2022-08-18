@@ -10,7 +10,7 @@ export default function PollPage() {
 
   const queryClient = trpc.useContext();
   const { data, status, error } = trpc.useQuery([
-    'get-poll-by-id',
+    'poll.by-id',
     { id: query.id as string },
   ]);
   const { mutate } = trpc.useMutation('vote-on-poll', {

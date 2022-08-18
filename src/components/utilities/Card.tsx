@@ -1,32 +1,30 @@
-import clsx from 'clsx';
 import React from 'react';
+
+import clsxm from '@/lib/clsxm';
 
 type ICardProps<T extends React.ElementType> = {
   as?: React.ElementType;
-  cardWidth?: number | string;
-  cardHeight?: number | string;
   className?: string;
+  hoverable?: boolean;
   children: React.ReactNode;
 } & React.ComponentPropsWithRef<T>;
 
 export default function Card<T extends React.ElementType = 'div'>({
-  cardWidth = '100%',
-  cardHeight = '100%',
   as = 'div',
   className = '',
+  hoverable = true,
   children,
   ...rest
 }: ICardProps<T>) {
   const Tag = as;
   return (
-    <div
-      className='group relative'
-      style={{ height: cardHeight, width: cardWidth }}
-    >
-      <div className='absolute h-full w-full rounded-md bg-black'></div>
+    <div className='h-max rounded-md bg-black'>
       <Tag
-        className={clsx(
-          'absolute h-full w-full rounded-md border-2 border-black bg-white transition-transform duration-200 hover:-translate-x-1 hover:-translate-y-1 active:translate-y-0 active:translate-x-0',
+        className={clsxm(
+          'flex rounded-md border-2 border-black bg-white transition-transform duration-200',
+          hoverable &&
+            'hover:-translate-x-1 hover:-translate-y-1 active:translate-y-0 active:translate-x-0',
+          (as === 'button' || as === 'a') && 'items-center justify-center',
           className
         )}
         {...rest}
