@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import React from 'react';
 import Marquee from 'react-fast-marquee';
 import { useFieldArray, useForm } from 'react-hook-form';
 
@@ -41,15 +42,17 @@ const Home: NextPage = () => {
   });
 
   const queryClient = trpc.useContext();
+  const [isSubmitLoading, setIsSubmitLoading] = React.useState<boolean>(false);
   const { data, isError, error, isLoading } = trpc.useQuery(['poll.all']);
   const { mutate } = trpc.useMutation('poll.create', {
     async onSuccess(data) {
-      console.log('success', data);
-      router.push(`/poll/${data.poll.id}`);
+      setIsSubmitLoading(false);
+      router.push(`/poll/${data.id}`);
     },
   });
 
   const onSubmit = handleSubmit((data) => {
+    setIsSubmitLoading(true);
     const date = new Date();
     date.setDate(date.getDate() + 1);
     const payload = {
@@ -63,8 +66,8 @@ const Home: NextPage = () => {
     <div>
       <Helmet />
       <Navbar />
-      <main className='flex h-[85vh] items-center justify-center gap-x-5 px-20'>
-        <form className='' onSubmit={onSubmit}>
+      <main className='flex items-center justify-center gap-x-5 px-20'>
+        <form onSubmit={onSubmit}>
           <Card
             hoverable={false}
             className='flex flex-col rounded-t-md rounded-b-none border-x-2 border-b-0 border-t-2 border-black bg-white'
@@ -102,7 +105,9 @@ const Home: NextPage = () => {
                     <div
                       className={clsxm(
                         'h-full w-full rounded bg-cpurple-200',
-                        errors.options && 'bg-corange-200'
+                        errors.options &&
+                          errors.options[index] &&
+                          'bg-corange-200'
                       )}
                     >
                       <input
@@ -114,6 +119,7 @@ const Home: NextPage = () => {
                       type='button'
                       as='button'
                       className='h-11 border bg-corange-300 text-white'
+                      onClick={() => remove(index)}
                     >
                       <span className='mx-2 h-3/4 w-3/4'>
                         <TrashIcon />
@@ -121,7 +127,9 @@ const Home: NextPage = () => {
                     </Card>
                   </div>
                   <p className='error-msg'>
-                    {errors.options && errors.options[index]?.body?.message}
+                    {errors.options &&
+                      errors.options[index] &&
+                      errors.options[index]?.body?.message}
                   </p>
                 </div>
               ))}
@@ -149,7 +157,7 @@ const Home: NextPage = () => {
             </div>
           </Card>
           <div className='flex w-full rounded-b-md bg-black'>
-            <Link href='/'>
+            <Link href={isSubmitLoading ? '' : '/'}>
               <a
                 className='w-1/2 rounded-bl-md border-t-2 border-b-2 border-r border-l-2 border-black bg-white py-5 text-center transition-transform hover:-translate-x-1 hover:-translate-y-1 hover:bg-pink-300 active:translate-x-0 active:translate-y-0'
                 type='button'
@@ -160,8 +168,9 @@ const Home: NextPage = () => {
             <button
               className='w-1/2 rounded-br-md border-t-2 border-b-2 border-l border-r-2 border-black bg-white py-5 transition-transform hover:-translate-x-1 hover:-translate-y-1 hover:bg-pink-300 active:translate-x-0 active:translate-y-0'
               type='submit'
+              disabled={isSubmitLoading}
             >
-              Create
+              {isSubmitLoading ? 'Creating..' : 'Create'}
             </button>
           </div>
         </form>

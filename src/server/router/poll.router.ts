@@ -20,19 +20,16 @@ export const pollRouter = createRouter()
       const poll = await prisma.poll.create({
         data: {
           body: pollData.body,
-          expiresAt: pollData.expiresAt,
+          expiresAt: pollData.expiresAt || new Date(),
           ownerToken: ctx?.token || 'No token',
+          options: {
+            create: optionsData,
+          },
         },
         select: { id: true },
       });
 
-      const optionArr = optionsData.map((data) => {
-        return { ...data, pollId: poll.id };
-      });
-      const option = await prisma.option.createMany({
-        data: optionArr,
-      });
-      return { poll, option };
+      return poll;
     },
   })
   .query('by-id', {

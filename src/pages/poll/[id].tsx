@@ -1,8 +1,10 @@
-import { RadioGroup } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import React from 'react';
 
 import { trpc } from '@/lib/trpc';
+
+import Navbar from '@/components/layout/Navbar';
+import MainPoll from '@/components/pages/poll/MainPoll';
 
 export default function PollPage() {
   const { query } = useRouter();
@@ -13,55 +15,37 @@ export default function PollPage() {
     'poll.by-id',
     { id: query.id as string },
   ]);
-  const { mutate } = trpc.useMutation('vote-on-poll', {
+  const { mutate } = trpc.useMutation('vote.add', {
     async onSuccess() {
-      await queryClient.invalidateQueries(['get-poll-by-id']);
+      console.log('udah');
+      await queryClient.invalidateQueries(['poll.by-id']);
     },
   });
 
   const voteHandler = () => {
+    console.log(votedOption);
     mutate({ optionId: votedOption });
   };
 
   return (
-    <div className='flex flex-col items-center py-10'>
-      {status === 'loading' ? (
-        'Loading'
-      ) : status === 'error' ? (
-        error.message
-      ) : (
-        <article className='flex flex-col items-center'>
-          <h3>{data?.poll.body}</h3>
-          {data?.isOwner || (data?.poll.isPublic && data.isVoted) ? (
-            <div>You can see this shit</div>
-          ) : data?.isVoted ? (
-            <div>You already voted</div>
-          ) : (
-            <>
-              <RadioGroup value={votedOption} onChange={setVotedOption}>
-                <div className='my-7 flex justify-center gap-x-5'>
-                  {data?.poll.options.map((option) => (
-                    <RadioGroup.Option
-                      key={option.id}
-                      value={option.id}
-                      className='cursor-pointer'
-                    >
-                      {({ checked }) => (
-                        <span className={checked ? 'bg-blue-200' : ''}>
-                          {option.body}
-                        </span>
-                      )}
-                    </RadioGroup.Option>
-                  ))}
-                </div>
-              </RadioGroup>
-              <button type='button' onClick={() => voteHandler()}>
-                Submit
-              </button>
-            </>
-          )}
-        </article>
-      )}
+    <div>
+      <Navbar />
+      <main className='border-y-2 border-black bg-white'>
+        {status === 'loading' ? (
+          <div className='py-10'>Loading...</div>
+        ) : status === 'error' ? (
+          <div className='py-10'>{error.message}</div>
+        ) : data ? (
+          <MainPoll
+            data={data}
+            votedOption={votedOption}
+            setVotedOption={setVotedOption}
+            voteHandler={voteHandler}
+          />
+        ) : (
+          <div className='py-10'>Poll not found</div>
+        )}
+      </main>
     </div>
   );
 }
